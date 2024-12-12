@@ -30,17 +30,17 @@ for npy_folder in npy_folders:
         transl_th = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)
         # shape 쪽 파라미터입니다. 임의로 0으로 설정
 
-        # Forward pass를 통해 joint positions를 얻음
+        # By forward pass through SMPL model, obtain joint positions
         output = smpl(global_orient=pose_th[:, :3], body_pose=pose_th[:, 3:], transl=transl_th)
-        joints_npy = output.joints.detach().numpy()
+        joints_npy = output.joints.detach().numpy() # Extract joint positions as a NumPy array
 
-        joints_npy = joints_npy[:,:24]
-        #print(joints_npy.shape)
+        joints_npy = joints_npy[:,:24]  # Select which contain the necessary 15 joints
 
-        reshape = [0, 9, 17, 19, 21, 16, 18, 20, 15, 2, 5, 8, 1, 4, 7] 
-        a = joints_npy[:,reshape,:]
-        joints_npy = np.reshape(joints_npy[:,reshape,:], (-1,45))
-        #print(joints_npy.shape)
+        # Rearrange the necessary 15 key joints to match the required format for later processing
+        reshape = [0, 9, 17, 19, 21, 16, 18, 20, 15, 2, 5, 8, 1, 4, 7]  # Indices of the 15 main joints
+        selected_joints = joints_npy[:,reshape,:]  # Select and reorder the 15 main joints
+        joints_npy = np.reshape(selected_joints, (-1,45))   # Shape becomes (frame_num, 45)
+        
         save_path = os.path.join("D:\Desktop\motion_data_internship\CMU_csv_jointpos", )
         npy_file = npy_file.replace(".npy", "")
         np.savetxt(f"D:\\Desktop\\motion_data_internship\\CMU_csv_jointpos\\{npy_file}.csv", joints_npy, delimiter=",")
