@@ -1,4 +1,4 @@
-# SMPL to CMU
+# 1. SMPL to CMU
 # (n, 15, 3) 차원 npy 파일로 저장
 
 from smplx import SMPL # SMPLX로 해주세요.
